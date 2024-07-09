@@ -40,6 +40,10 @@ CORS(app)
 def index():
     return '<h1>Project Server</h1>'
 
+@app.route('/test')
+def test():
+    return '<h1>This is a test</h1>'
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
