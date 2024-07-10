@@ -45,3 +45,4 @@ class Speaker(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Speaker {self.first_name} {self.last_name}>'
+
