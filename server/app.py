@@ -34,7 +34,7 @@ api = Api(app)
 # Instantiate CORS
 CORS(app)
 # Add your model imports
-from models import User, Event, Speaker
+from models import User, Event, Speaker, event_speakers
 
 # Views go here!
 
