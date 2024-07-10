@@ -4,16 +4,26 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
-from sqlalchemy.orm import validates
-from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import MetaData
-from sqlalchemy.orm import validates
-from config import db
 import pytz
+
+metadata = MetaData(
+    naming_convention={
+        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    }
+)
+
+db = SQLAlchemy(metadata=metadata)
 
 def utcnow():
     return datetime.now(pytz.utc)
+
+# Association table for many-to-many relationship between Event and Speaker
+event_speakers = db.Table('event_speakers',
+    db.Column('event_id', db.Integer, db.ForeignKey('events.event_id'), primary_key=True),
+    db.Column('speaker_id', db.Integer, db.ForeignKey('speakers.id'), primary_key=True),
+    db.Column('role', db.String(50), nullable=False)  # Additional field
+)
 
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
@@ -31,7 +41,7 @@ class Event(db.Model, SerializerMixin):
     organizer = db.relationship('User', back_populates='events')
 
     # Relationship with Speaker model
-    speakers = db.relationship('Speaker', secondary='event_speakers', back_populates='events')
+    speakers = db.relationship('Speaker', secondary=event_speakers, back_populates='events')
 
     @validates('name')
     def validate_name(self, key, name):
@@ -54,15 +64,6 @@ class Event(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Event {self.name}>'
 
-# Association table for many-to-many relationship between Event and Speaker
-event_speakers = db.Table('event_speakers',
-    db.Column('event_id', db.Integer, db.ForeignKey('events.event_id'), primary_key=True),
-    db.Column('speaker_id', db.Integer, db.ForeignKey('speakers.id'), primary_key=True),
-    db.Column('role', db.String(50), nullable=False)  # User submittable attribute
-)
-import pytz
-
-# Models go here!
 class Speaker(db.Model, SerializerMixin):
     __tablename__ = 'speakers'
     id = db.Column(db.Integer, primary_key=True)
@@ -73,7 +74,7 @@ class Speaker(db.Model, SerializerMixin):
     image = db.Column(db.String(80), nullable=True)
     
     # Relationship with Event model
-    events = db.relationship('Event', back_populates='speaker', cascade='all, delete-orphan')
+    events = db.relationship('Event', secondary=event_speakers, back_populates='speakers')
 
     @validates('first_name')
     def validate_first_name(self, key, first_name):
@@ -102,10 +103,6 @@ class Speaker(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Speaker {self.first_name} {self.last_name}>'
 
-
-def utcnow():
-    return datetime.now(pytz.utc)
-
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
@@ -117,7 +114,7 @@ class User(db.Model, SerializerMixin):
     role = db.Column(db.String(50), nullable=False, default='attendee')
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
-    events = db.relationship('Event', backref='organizer', lazy=True)
+    events = db.relationship('Event', back_populates='organizer', lazy=True)
 
     @validates('first_name')
     def validate_first_name(self, key, first_name):
@@ -148,3 +145,6 @@ class User(db.Model, SerializerMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'<User {self.first_name} {self.last_name}>'
