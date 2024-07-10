@@ -39,7 +39,7 @@ button:hover{
   color: #003572;
 }
 
-.container{
+.browse-section{
   background-color: #003572;
   color: #fff;
   padding: 20px;
@@ -48,7 +48,7 @@ button:hover{
   width: 100%;
   margin: 0;
 }
-.container h1{
+.browse-section h1{
   font-size: 2rem;
   margin-bottom: 20px;
   margin-top: 30px;
@@ -56,6 +56,10 @@ button:hover{
 
 ion-icon {
   font-size: 30px;
+  cursor: pointer;
 }
 
-
+.form-page{
+  height: 100vh;
+  padding-top: 10px;
+}
