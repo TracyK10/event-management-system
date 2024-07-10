@@ -25,16 +25,17 @@ metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
 })
 db = SQLAlchemy(metadata=metadata)
-migrate = Migrate(app, db)
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Instantiate REST API
 api = Api(app)
 
 # Instantiate CORS
 CORS(app)
+
 # Add your model imports
-from models import User, Event, Speaker, event_speakers
+from models import User, Event, Speaker
 
 # Views go here!
 
@@ -68,7 +69,7 @@ def users():
 
 @app.route('/users/<int:user_id>', methods=['GET', 'PATCH', 'DELETE'])
 def user_by_id(user_id):
-    user = User.query.filter(User.user_id == user_id).first()
+    user = User.query.filter(User.id == user_id).first()
 
     if user is None:
         response_body = {"message": "User not found. Please try again."}
@@ -118,7 +119,7 @@ def events():
 
 @app.route('/events/<int:event_id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(event_id):
-    event = Event.query.filter(Event.event_id == event_id).first()
+    event = Event.query.filter(Event.id == event_id).first()
 
     if event is None:
         response_body = {"message": "This event does not exist. Please try again."}
@@ -189,4 +190,3 @@ def speaker_by_id(speaker_id):
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
-
