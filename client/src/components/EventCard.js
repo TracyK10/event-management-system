@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 
-function EventCard({ event }) {
+function EventCard({ id, event }) {
   return (
     <>
       <Card sx={{ maxWidth: 345 }}>

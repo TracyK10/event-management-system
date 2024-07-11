@@ -8,7 +8,6 @@ function Event() {
     <NavBar />
     <div>
       <h1 className='text-center'>My events</h1>
-
     </div>
     <Footer />
     </>
