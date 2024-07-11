@@ -7,6 +7,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import pytz
 
+
 metadata = MetaData(
     naming_convention={
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -27,6 +28,7 @@ event_speakers = db.Table('event_speakers',
 
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
+    
     event_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
@@ -60,6 +62,16 @@ class Event(db.Model, SerializerMixin):
         if not time:
             raise ValueError(f'{key} is required')
         return time
+    
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "location": self.location,
+            "start_time": self.start_time.isoformat(),
+            "end_time": self.end_time.isoformat(),
+            "created_by": self.created_by,
+        }
 
     def __repr__(self):
         return f'<Event {self.name}>'
@@ -148,3 +160,11 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<User {self.first_name} {self.last_name}>'
+    def to_dict(self):
+        return {
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "phone_number": self.phone_number,
+            "role": self.role,
+        }

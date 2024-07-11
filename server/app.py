@@ -3,16 +3,16 @@
 # Standard library imports
 
 # Remote library imports
-import datetime
+from datetime import datetime
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
 from werkzeug.security import generate_password_hash
 
+
 # Local imports
+from models import db, User, Event, Speaker
 
 # Instantiate app, set attributes
 app = Flask(__name__)
@@ -20,21 +20,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
-# Define metadata, instantiate db
-metadata = MetaData(naming_convention={
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-})
-db = SQLAlchemy(metadata=metadata)
-migrate = Migrate(app, db)
+
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Instantiate REST API
 api = Api(app)
 
 # Instantiate CORS
 CORS(app)
-# Add your model imports
-from models import User, Event, Speaker, event_speakers
 
 # Views go here!
 
@@ -51,15 +45,14 @@ def users():
 
     elif request.method == 'POST':
         data = request.get_json()
-        password_hash = generate_password_hash(data.get('password'))
         new_user = User(
             first_name=data.get('first_name'),
             last_name=data.get('last_name'),
             email=data.get('email'),
             phone_number=data.get('phone_number'),
-            role=data.get('role'),
-            password_hash=password_hash
+            role=data.get('role')
         )
+        new_user.set_password(data.get('password'))  
         db.session.add(new_user)
         db.session.commit()
 
@@ -68,9 +61,9 @@ def users():
 
 @app.route('/users/<int:user_id>', methods=['GET', 'PATCH', 'DELETE'])
 def user_by_id(user_id):
-    user = User.query.filter(User.user_id == user_id).first()
+    user = User.query.get(user_id)
 
-    if user is None:
+    if not user:
         response_body = {"message": "User not found. Please try again."}
         return make_response(jsonify(response_body), 404)
     
@@ -94,7 +87,6 @@ def user_by_id(user_id):
         response_body = {"delete_successful": True, "message": "User deleted successfully."}
         return make_response(jsonify(response_body), 200)
 
-
 # events views
 @app.route('/events', methods=['GET', 'POST'])
 def events():
@@ -104,17 +96,29 @@ def events():
 
     elif request.method == 'POST':
         data = request.get_json()
+
+        try:
+            start_time = datetime.strptime(data.get("start_time"), '%Y-%m-%dT%H:%M:%S')
+            end_time = datetime.strptime(data.get("end_time"), '%Y-%m-%dT%H:%M:%S')
+        except ValueError as e:
+            response_body = {"error": "Invalid datetime format. Use ISO 8601 format ('YYYY-MM-DDTHH:MM:SS')"}
+            return make_response(jsonify(response_body), 400)
+
+        # Create new event
         new_event = Event(
             name=data.get("name"),
             description=data.get("description"),
             location=data.get("location"),
-            start_time=data.get("start_time"),
-            end_time=data.get("end_time"),
+            start_time=start_time,
+            end_time=end_time,
             created_by=data.get("created_by")
         )
+
         db.session.add(new_event)
         db.session.commit()
+
         return make_response(jsonify(new_event.to_dict()), 201)
+
 
 @app.route('/events/<int:event_id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(event_id):
@@ -129,18 +133,21 @@ def event_by_id(event_id):
 
     elif request.method == 'PATCH':
         data = request.get_json()
+
         for key, value in data.items():
             setattr(event, key, value)
 
         db.session.commit()
+
         return make_response(jsonify(event.to_dict()), 200)
 
     elif request.method == 'DELETE':
         db.session.delete(event)
         db.session.commit()
+
         response_body = {"delete_successful": True, "message": "Event deleted successfully."}
         return make_response(jsonify(response_body), 200)
-    
+
 # views for speakers
 @app.route('/speakers', methods=['GET', 'POST'])
 def speakers():
@@ -186,7 +193,5 @@ def speaker_by_id(speaker_id):
         response_body = {"delete_successful": True, "message": "Speaker deleted successfully."}
         return make_response(jsonify(response_body), 200)
 
-
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
-
+    app.run(debug=True)
