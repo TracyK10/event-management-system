@@ -19,15 +19,22 @@ function EventsPage() {
     <div>
       <NavBar />
       <h1 className="text-center text-white text-5xl p-10">My events</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols
-      -3 gap-4 p-10">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
         {event.map((event) => (
-            <EventCard key={event.id} event={event}/>
+          <EventCard key={event.id} event={event} />
         ))}
       </div>
       <Footer />
     </div>
-  )
+  );
 }
 
 export default EventsPage

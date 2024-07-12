@@ -63,3 +63,7 @@ ion-icon {
   height: 100vh;
   padding-top: 10px;
 }
+
+.event-page{
+    height: 70vh;
+}

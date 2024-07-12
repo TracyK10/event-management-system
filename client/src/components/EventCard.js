@@ -10,7 +10,16 @@ import { Link } from "react-router-dom";
 function EventCard({ id, event }) {
   return (
     <>
-      <Card sx={{ maxWidth: 345 }}>
+      <Card
+        sx={{
+          maxWidth: 345,
+          border: "1px solid #e0e0e0",
+          borderRadius: "8px",
+          minWidth: 200,
+          marginBottom: 10,
+          width: 600
+        }}
+      >
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {event.title}
@@ -20,7 +29,7 @@ function EventCard({ id, event }) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Link to={`/events/${id}`}>
+          <Link to={`/events/${event.created_by}`}>
             <Button size="small">Go to {event.name}</Button>
           </Link>
         </CardActions>

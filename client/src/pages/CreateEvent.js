@@ -22,7 +22,7 @@ function CreateEvent() {
       end_time: "",
       created_by: "",
     },
-    validationSchema: Yup.object({
+    validationSchema: Yup.object().shape({
       name: Yup.string().required("Required"),
       description: Yup.string().required("Required"),
       location: Yup.string().required("Required"),
@@ -32,12 +32,12 @@ function CreateEvent() {
     }),
     onSubmit: (values) => {
       console.log("Submitting values:", values); // Log the values being submitted
-      fetch("/events", {
+      fetch("events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(values, null, 2),
       })
         .then((res) => {
           if (res.status === 200) {
