@@ -20,7 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
-
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -45,14 +44,18 @@ def users():
 
     elif request.method == 'POST':
         data = request.get_json()
+        required_fields = ['first_name', 'last_name', 'email', 'phone_number', 'role', 'password']
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"message": "Missing required fields"}), 400)
+
         new_user = User(
-            first_name=data.get('first_name'),
-            last_name=data.get('last_name'),
-            email=data.get('email'),
-            phone_number=data.get('phone_number'),
-            role=data.get('role')
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            email=data['email'],
+            phone_number=data['phone_number'],
+            role=data['role']
         )
-        new_user.set_password(data.get('password'))  
+        new_user.set_password(data['password'])  
         db.session.add(new_user)
         db.session.commit()
 
@@ -96,22 +99,25 @@ def events():
 
     elif request.method == 'POST':
         data = request.get_json()
+        required_fields = ["name", "description", "location", "start_time", "end_time", "created_by"]
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"message": "Missing required fields"}), 400)
 
         try:
-            start_time = datetime.strptime(data.get("start_time"), '%Y-%m-%dT%H:%M:%S')
-            end_time = datetime.strptime(data.get("end_time"), '%Y-%m-%dT%H:%M:%S')
-        except ValueError as e:
+            start_time = datetime.strptime(data["start_time"], '%Y-%m-%dT%H:%M:%S')
+            end_time = datetime.strptime(data["end_time"], '%Y-%m-%dT%H:%M:%S')
+        except ValueError:
             response_body = {"error": "Invalid datetime format. Use ISO 8601 format ('YYYY-MM-DDTHH:MM:SS')"}
             return make_response(jsonify(response_body), 400)
 
         # Create new event
         new_event = Event(
-            name=data.get("name"),
-            description=data.get("description"),
-            location=data.get("location"),
+            name=data["name"],
+            description=data["description"],
+            location=data["location"],
             start_time=start_time,
             end_time=end_time,
-            created_by=data.get("created_by")
+            created_by=data["created_by"]
         )
 
         db.session.add(new_event)
@@ -119,12 +125,11 @@ def events():
 
         return make_response(jsonify(new_event.to_dict()), 201)
 
-
 @app.route('/events/<int:event_id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(event_id):
-    event = Event.query.filter(Event.event_id == event_id).first()
+    event = Event.query.get(event_id)
 
-    if event is None:
+    if not event:
         response_body = {"message": "This event does not exist. Please try again."}
         return make_response(jsonify(response_body), 404)
     
@@ -133,7 +138,6 @@ def event_by_id(event_id):
 
     elif request.method == 'PATCH':
         data = request.get_json()
-
         for key, value in data.items():
             setattr(event, key, value)
 
@@ -157,12 +161,16 @@ def speakers():
 
     elif request.method == 'POST':
         data = request.get_json()
+        required_fields = ["first_name", "last_name", "email", "phone_number", "image"]
+        if not all(field in data for field in required_fields):
+            return make_response(jsonify({"message": "Missing required fields"}), 400)
+
         new_speaker = Speaker(
-            first_name=data.get("first_name"),
-            last_name=data.get("last_name"),
-            email=data.get("email"),
-            phone_number=data.get("phone_number"),
-            image=data.get("image")
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            phone_number=data["phone_number"],
+            image=data["image"]
         )
         db.session.add(new_speaker)
         db.session.commit()
@@ -170,9 +178,9 @@ def speakers():
 
 @app.route('/speakers/<int:speaker_id>', methods=['GET', 'PATCH', 'DELETE'])
 def speaker_by_id(speaker_id):
-    speaker = Speaker.query.filter(Speaker.id == speaker_id).first()
+    speaker = Speaker.query.get(speaker_id)
 
-    if speaker is None:
+    if not speaker:
         response_body = {"message": "This speaker does not exist. Please try again."}
         return make_response(jsonify(response_body), 404)
     

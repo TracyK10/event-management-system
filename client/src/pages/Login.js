@@ -23,7 +23,7 @@ function Login() {
       password: Yup.string().required("Required"),
     }),
     onSubmit: (values) => {
-      fetch("url", {
+      fetch("/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,7 +8,7 @@ function EventsPage() {
   const [event, setEvent] = useState([])
 
   useEffect(() => {
-    fetch('url')
+    fetch('/events')
       .then((res) => res.json())
       .then((data) => {
         setEvent(data)

@@ -37,7 +37,7 @@ function Register() {
     }),
     onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-      fetch("url", {
+      fetch("users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

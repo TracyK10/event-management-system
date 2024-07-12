@@ -11,11 +11,6 @@ function EventCard({ id, event }) {
   return (
     <>
       <Card sx={{ maxWidth: 345 }}>
-        <CardMedia
-          sx={{ height: 140 }}
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="green iguana"
-        />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {event.title}
@@ -25,7 +20,7 @@ function EventCard({ id, event }) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Link to="/event/events/:id">
+          <Link to={`/events/${id}`}>
             <Button size="small">Go to {event.name}</Button>
           </Link>
         </CardActions>
