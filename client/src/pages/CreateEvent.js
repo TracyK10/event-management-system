@@ -12,7 +12,19 @@ import {
   FormLabel,
 } from "@mui/material";
 
-function CreateEvent() {
+const formatDateTime = (datetime) => {
+  const date = new Date(datetime);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  const milliseconds = String(date.getMilliseconds()).padStart(6, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+};
+
+const CreateEvent = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -23,21 +35,27 @@ function CreateEvent() {
       created_by: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required("Required"),
-      description: Yup.string().required("Required"),
-      location: Yup.string().required("Required"),
-      start_time: Yup.string().required("Required"),
-      end_time: Yup.string().required("Required"),
-      created_by: Yup.number().required("Required").integer(),
+      name: Yup.string().required("Event name is required").max(100),
+      description: Yup.string().nullable(),
+      location: Yup.string().required("Location is required").max(200),
+      start_time: Yup.date().required("Start time is required"),
+      end_time: Yup.date().required("End time is required"),
+      created_by: Yup.number().required("Creator is required").integer(),
     }),
     onSubmit: (values) => {
-      console.log("Submitting values:", values); // Log the values being submitted
-      fetch("events", {
+      const formattedValues = {
+        ...values,
+        start_time: formatDateTime(values.start_time),
+        end_time: formatDateTime(values.end_time),
+      };
+
+      console.log("Submitting values:", formattedValues); // Log the values being submitted
+      fetch("/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values, null, 2),
+        body: JSON.stringify(formattedValues),
       })
         .then((res) => {
           if (res.status === 200) {
@@ -183,6 +201,6 @@ function CreateEvent() {
       <Footer />
     </div>
   );
-}
+};
 
 export default CreateEvent;

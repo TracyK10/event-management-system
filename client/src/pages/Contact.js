@@ -13,6 +13,11 @@ import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
 
 function ContactUs() {
+  function handleSubmit(e){
+    e.preventDefault();
+    alert("Thank you for contacting us!")
+  }
+
   return (
     <>
       <NavBar />
@@ -46,6 +51,7 @@ function ContactUs() {
               variant="contained"
               color="primary"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Submit
             </Button>
