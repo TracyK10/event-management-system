@@ -23,11 +23,8 @@ function UserNavBar() {
           <li className="cursor-pointer">Contact us</li>
         </Link>
         {/* TODO: LOGOUT PAGE */}
-        <Link to="/login">
-          <li className="cursor-pointer">Login</li>
-        </Link>
-        <Link to="/register">
-          <li className="cursor-pointer">Register</li>
+        <Link to="/">
+          <li className="cursor-pointer">Logout</li>
         </Link>
       </ul>
     </nav>
