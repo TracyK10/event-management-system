@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/UserNavBar";
 import Footer from "../components/Footer";
 import { useFormik } from "formik";
 import * as Yup from "yup";

@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 // import EventCard from '../components/EventCard'
-import Footer from '../components/Footer'
-import NavBar from '../components/NavBar'
-import EventCard from '../components/EventCard'
+import Footer from "../components/Footer";
+import NavBar from "../components/UserNavBar";
+import EventCard from "../components/EventCard";
 
 function EventsPage() {
-  const [event, setEvent] = useState([])
+  const [event, setEvent] = useState([]);
 
   useEffect(() => {
-    fetch('/events')
+    fetch("/events")
       .then((res) => res.json())
       .then((data) => {
-        setEvent(data)
-      })
-  }, [])
+        setEvent(data);
+      });
+  }, []);
 
   return (
     <div>
@@ -37,4 +37,4 @@ function EventsPage() {
   );
 }
 
-export default EventsPage
+export default EventsPage;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/UserNavBar";
 import Footer from "../components/Footer";
 
 function Event() {

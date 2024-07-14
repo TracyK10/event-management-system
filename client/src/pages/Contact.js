@@ -10,12 +10,12 @@ import {
   FormLabel,
 } from "@mui/material";
 import Footer from "../components/Footer";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/UserNavBar";
 
 function ContactUs() {
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault();
-    alert("Thank you for contacting us!")
+    alert("Thank you for contacting us!");
   }
 
   return (

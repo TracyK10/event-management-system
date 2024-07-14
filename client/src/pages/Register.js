@@ -1,10 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField, Button, Container, Typography, Box, FormLabel } from "@mui/material";
+import { UserContext } from "./context/UserContext";
 
 function Register() {
   const [refreshPage, setRefreshPage] = useState(false);
+  const { register } = useContext(UserContext)
+
+  function handleSubmit(e){
+    e.preventDefault();
+    const { email, password, name } = formik.values;
+    register({ email, password, name })
+  }
+
+
 
   const formik = useFormik({
     initialValues: {
@@ -36,13 +47,13 @@ function Register() {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      console.log(JSON.stringify(values, null, 2));
       fetch("/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values, null, 2),
+        body: JSON.stringify(values),
       }).then((res) => {
         if (res.status === 200) {
           setRefreshPage(!refreshPage);
@@ -177,7 +188,7 @@ function Register() {
                 formik.touched.confirmPassword && formik.errors.confirmPassword
               }
             />
-
+            <Link to="/login">
             <Button
               color="primary"
               variant="contained"
@@ -187,8 +198,15 @@ function Register() {
             >
               Register
             </Button>
+            </Link>
           </form>
         </Box>
+        <p className="mt-7">
+          Already have an account?
+          <Link className="text-sky-800 underline" to="/login">
+            Log In
+          </Link>
+        </p>
       </Container>
     </div>
   );

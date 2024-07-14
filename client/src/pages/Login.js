@@ -9,6 +9,7 @@ import {
   Box,
   FormLabel,
 } from "@mui/material";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 function Login() {
   const [error, setError] = useState(false);
@@ -77,6 +78,7 @@ function Login() {
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
+          <Link to="/user">
           <Button
             type="submit"
             variant="contained"
@@ -85,10 +87,13 @@ function Login() {
           >
             Submit
           </Button>
+          </Link>
           {error && <div>{message}</div>}
         </form>
       </Box>
+      <p className="mt-7">Don't have an account? <Link className="text-sky-800 underline" to='/register'>Sign Up</Link></p>
     </Container>
+    
   </div>
   );
 }
