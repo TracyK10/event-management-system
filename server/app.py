@@ -99,31 +99,42 @@ def events():
 
     elif request.method == 'POST':
         data = request.get_json()
-        required_fields = ["name", "description", "location", "start_time", "end_time", "created_by"]
-        if not all(field in data for field in required_fields):
-            return make_response(jsonify({"message": "Missing required fields"}), 400)
+        print(f"Received data: {data}")  # Log the received data for debugging
+        name = data.get('name')
+        description = data.get('description')
+        location = data.get('location')
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        created_by = data.get('created_by')
 
+        # Log the date strings for debugging
+        print(f"start_time: {start_time}")
+        print(f"end_time: {end_time}")
+
+        # Ensure the received datetime strings are in the correct format
         try:
-            start_time = datetime.strptime(data["start_time"], '%Y-%m-%dT%H:%M:%S')
-            end_time = datetime.strptime(data["end_time"], '%Y-%m-%dT%H:%M:%S')
-        except ValueError:
-            response_body = {"error": "Invalid datetime format. Use ISO 8601 format ('YYYY-MM-DDTHH:MM:SS')"}
-            return make_response(jsonify(response_body), 400)
+            # Parse the datetime fields
+            start_time = datetime.fromisoformat(data['start_time'])
+            end_time = datetime.fromisoformat(data['end_time'])
 
-        # Create new event
-        new_event = Event(
-            name=data["name"],
-            description=data["description"],
-            location=data["location"],
-            start_time=start_time,
-            end_time=end_time,
-            created_by=data["created_by"]
-        )
+            # Create the event
+            new_event = Event(
+                name=data['name'],
+                description=data['description'],
+                location=data['location'],
+                start_time=start_time,
+                end_time=end_time,
+                created_by=data['created_by']
+            )
+            db.session.add(new_event)
+            db.session.commit()
+            return jsonify({"message": "Event created successfully"}), 200
 
-        db.session.add(new_event)
-        db.session.commit()
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+        except KeyError as e:
+            return jsonify({"error": f"Missing field {str(e)}"}), 400
 
-        return make_response(jsonify(new_event.to_dict()), 201)
 
 @app.route('/events/<int:event_id>', methods=['GET', 'PATCH', 'DELETE'])
 def event_by_id(event_id):

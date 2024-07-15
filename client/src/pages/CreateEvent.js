@@ -3,14 +3,7 @@ import NavBar from "../components/UserNavBar";
 import Footer from "../components/Footer";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  TextField,
-  Button,
-  Container,
-  Typography,
-  Box,
-  FormLabel,
-} from "@mui/material";
+import { TextField, Button, Container, Typography, Box, FormLabel } from "@mui/material";
 
 const formatDateTime = (datetime) => {
   const date = new Date(datetime);
@@ -20,8 +13,7 @@ const formatDateTime = (datetime) => {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
   const seconds = String(date.getSeconds()).padStart(2, "0");
-  const milliseconds = String(date.getMilliseconds()).padStart(6, "0");
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 };
 
 const CreateEvent = () => {
@@ -111,13 +103,8 @@ const CreateEvent = () => {
                 multiline
                 rows={4}
                 {...formik.getFieldProps("description")}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
               />
 
               <FormLabel htmlFor="location">Location</FormLabel>
@@ -128,9 +115,7 @@ const CreateEvent = () => {
                 name="location"
                 type="text"
                 {...formik.getFieldProps("location")}
-                error={
-                  formik.touched.location && Boolean(formik.errors.location)
-                }
+                error={formik.touched.location && Boolean(formik.errors.location)}
                 helperText={formik.touched.location && formik.errors.location}
               />
 
@@ -142,12 +127,8 @@ const CreateEvent = () => {
                 name="start_time"
                 type="datetime-local"
                 {...formik.getFieldProps("start_time")}
-                error={
-                  formik.touched.start_time && Boolean(formik.errors.start_time)
-                }
-                helperText={
-                  formik.touched.start_time && formik.errors.start_time
-                }
+                error={formik.touched.start_time && Boolean(formik.errors.start_time)}
+                helperText={formik.touched.start_time && formik.errors.start_time}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -161,9 +142,7 @@ const CreateEvent = () => {
                 name="end_time"
                 type="datetime-local"
                 {...formik.getFieldProps("end_time")}
-                error={
-                  formik.touched.end_time && Boolean(formik.errors.end_time)
-                }
+                error={formik.touched.end_time && Boolean(formik.errors.end_time)}
                 helperText={formik.touched.end_time && formik.errors.end_time}
                 InputLabelProps={{
                   shrink: true,
@@ -178,20 +157,11 @@ const CreateEvent = () => {
                 name="created_by"
                 type="number"
                 {...formik.getFieldProps("created_by")}
-                error={
-                  formik.touched.created_by && Boolean(formik.errors.created_by)
-                }
-                helperText={
-                  formik.touched.created_by && formik.errors.created_by
-                }
+                error={formik.touched.created_by && Boolean(formik.errors.created_by)}
+                helperText={formik.touched.created_by && formik.errors.created_by}
               />
 
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-              >
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
                 Create Event
               </Button>
             </Box>
