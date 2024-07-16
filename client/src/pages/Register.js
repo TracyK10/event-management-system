@@ -58,7 +58,10 @@ function Register() {
         if (res.status === 200) {
           setRefreshPage(!refreshPage);
         }
-      });
+      })
+      .catch(err => {
+        console.error(err)
+      })
     },
   });
 
